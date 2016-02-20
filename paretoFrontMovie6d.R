@@ -7,8 +7,6 @@ library(scatterplot3d) # for 3-d scatter plot
 library(scales) # for transparency in plots
 library(grDevices) # some color palettes
 library(animation) # animation of plots
-library(fields) # for color bar
-library(aqfig)# for color bar
 library(phytools)# for color bar
 
 # initializing data frame to store values
@@ -99,10 +97,16 @@ dfComp$trans <- unlist(dfComp[trans_obj] - trans_lims[1])/(trans_lims[2]-trans_l
 ######################################
 # pch multiplier
 pch_mult <- 5
+
+# transparency values plotted
 tsp_diff <- trans_lims[2]-trans_lims[1]
 transp_leg_values <- c(0.1*tsp_diff,0.3*tsp_diff,0.95*tsp_diff)/(trans_lims[2]-trans_lims[1])
+
+# color bar dimensions
 col_bar_lwd <- 10
 col_bar_length <- 2
+
+# making the movie
 saveGIF({
   for(i in 1:length(unique(dfComp$PtNo))){
     
@@ -126,50 +130,57 @@ saveGIF({
                            ,mar=c(5,5,5,7)
                   ,xpd=T
                   )
-    par(xpd=T)
-    add.color.bar(leg=col_bar_length
-                  ,cols=alpha(col_pal,transp_leg_values[1])
-                  ,title=col_obj
-                  ,lims=col_lims
-                  ,digits=2
-                  ,prompt=F
-                  ,x=2
-                  ,y=-3.5
+    par(xpd=T) # plotting outside of the graph, in margins
+    # color bars
+    add.color.bar(leg=col_bar_length # length of color bar
+                  ,cols=alpha(col_pal,transp_leg_values[1]) # colors, with alpha for transparency
+                  ,title=col_obj # title, only for top color bar
+                  ,lims=col_lims # limits for color bar
+                  ,digits=2 # number of digits in rounding entries
+                  ,prompt=F # do not prompt user for location
+                  ,x=2 # x location
+                  ,y=-3.5 # y location
                   ,subtitle=paste(trans_obj,'=',round(transp_leg_values[1]*tsp_diff,2),sep=' ')
-                  ,lwd=col_bar_lwd)
+                  ,lwd=col_bar_lwd # width of the color bar
+                  )
     add.color.bar(leg=col_bar_length
-                  ,cols=alpha(col_pal,transp_leg_values[2])
-                  ,title=NA
+                  ,cols=alpha(col_pal,transp_leg_values[2]) # subtitle for the transparency objective
+                  ,title=NA # color title not repeated
                   ,lims=col_lims
                   ,digits=2
                   ,prompt=F
                   ,x=2
                   ,y=-4
                   ,subtitle=paste(trans_obj,'=',round(transp_leg_values[2]*tsp_diff,2),sep=' ')
-                  ,lwd=col_bar_lwd)
+                  ,lwd=col_bar_lwd
+                  )
     add.color.bar(leg=col_bar_length
                   ,cols=alpha(col_pal,transp_leg_values[3])
-                  ,title=NA
+                  ,title=NA # color title not repeated
                   ,lims=col_lims
                   ,digits=2
                   ,prompt=F
                   ,x=2
                   ,y=-4.5
                   ,subtitle=paste(trans_obj,'=',round(transp_leg_values[3]*tsp_diff,2),sep=' ')
-                  ,lwd=col_bar_lwd)
-    legend(x=3
-           ,y=3
-           ,legend=round(c(0.1,0.5,0.9)/abs(size_upper),2)
-           ,col=c('gray48')
-           ,pch=16
-           ,pt.cex=pch_mult*sqrt(c(0.1,0.5,0.9)/abs(size_upper))
-           ,bty='n'
-           ,title=size_obj
-           ,cex=1
-           ,y.intersp=2
-           ,horiz=F
+                  ,lwd=col_bar_lwd
+                  )
+    legend(x=3 # x location
+           ,y=3 # y location
+           ,legend=round(c(0.1,0.5,0.9)/abs(size_upper),2) # legend entries rounded
+           ,col=c('gray48') # color of points
+           ,pch=16 # symbol type
+           ,pt.cex=pch_mult*sqrt(c(0.1,0.5,0.9)/abs(size_upper)) # scale of points
+           ,bty='n' # no box
+           ,title=size_obj # legend title
+           ,cex=1 # character expansion
+           ,y.intersp=2 # vertial spacing of entries
+           ,horiz=F # vertical
     )
     
   }
 }
-,movie.name='paretoFun.gif',ani.height=800,ani.width=800)
+,movie.name='paretoFun.gif' # name of animation
+,ani.height=800 # animation height
+,ani.width=800 # animation width
+)
