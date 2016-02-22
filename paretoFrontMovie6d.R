@@ -90,6 +90,7 @@ col_pal <- topo.colors(n_cols,alpha=1)
 dfComp$col <- col_pal[unlist(round((n_cols-1)*((dfComp[col_obj] - col_lims[1])/(col_lims[2] - col_lims[1])))+1)]
 
 # transparency scaling
+# check whether good is more or less transparent
 dfComp$trans <- unlist(dfComp[trans_obj] - trans_lims[1])/(trans_lims[2]-trans_lims[1])
 
 ######################################
@@ -99,6 +100,7 @@ dfComp$trans <- unlist(dfComp[trans_obj] - trans_lims[1])/(trans_lims[2]-trans_l
 pch_mult <- 5
 
 # transparency values plotted
+# check for consistency with transparency objective
 tsp_diff <- trans_lims[2]-trans_lims[1]
 transp_leg_values <- c(0.1*tsp_diff,0.3*tsp_diff,0.95*tsp_diff)/(trans_lims[2]-trans_lims[1])
 
@@ -126,9 +128,9 @@ saveGIF({
                            ,xlab = x_obj # label for x axis
                            ,ylab = y_obj # label for y axis
                            ,zlab = z_obj # label for z axis
-                           ,main = 'The WEx'
-                           ,mar=c(5,5,5,7)
-                  ,xpd=T
+                           ,main = 'The WEx' # title
+                           ,mar=c(5,5,5,7) # bottom, left, top, right
+                  ,xpd=T # plotting outside the plot area
                   )
     par(xpd=T) # plotting outside of the graph, in margins
     # color bars
