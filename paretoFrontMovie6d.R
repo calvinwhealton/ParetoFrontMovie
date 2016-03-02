@@ -5,7 +5,7 @@
 # dimensions used are 3-space (x,y,z), size, color, and transparency
 
 # libraries
-library(scatterplot3d)   # for 3-d scatter plot
+library(plot3D)          # for 3-d scatter plot
 library(grDevices)       # some color palettes
 library(animation)       # animation of plots
 library(phytools)        # for color bar
