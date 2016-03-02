@@ -168,274 +168,187 @@ makeParetoMovie <- function(fname                # data name for file
   }else{
     ttype=NA
   }
+  
+  # making vector of angles and number of frames for movie
+  # case of all plots rotated first
+  if(aniRot == 'all'){
+    
+    # initializing angle vector
+    angs <- NULL
+    pfNo <- NULL
+    
+    # loop through the number of Pareto fronts
+    for(h in 1:length(uniqe(pf$PtNo))){
+      # looping through the plot angles
+      for(i in 1:length(ptAngle)){
+        
+        # adding extra frames to "pause" the movie at extreme rotation
+        if(i == 1 | i == length(ptAngle)){
+          angs <- c(angs,rep(ptAngle[i],aniFrameEx))
+          pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFrameEx))
+        }else{
+          angs <- c(angs,ptAngle[i])
+          pfNo <- c(pfNo,unique(pf$PtNo)[h])
+        } # end of if/else for extreme angle
+      } # end of for loop for angles
+    } # end of loop through Pareto fronts
+  }else if(aniRot == 'last'){
+    
+    # initializing angle vector
+    angs <- NULL
+    pfNo <- NULL
+    
+    # loop through the number of Pareto fronts
+    for(h in 1:length(unique(pf$PtNo))){
+      
+      # condition for the last Pareto Front
+      if(h == length(unique(pf$PtNo))){
+        # looping through the plot angles
+        for(i in 1:length(ptAngle)){
+          # adding extra frames to "pause" the movie at extreme rotation
+          if(i == 1 | i == length(ptAngle)){
+            angs <- c(angs,rep(ptAngle[i],aniFrameEx))
+            pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFrameEx))
+          }else{
+            angs <- c(angs,ptAngle[i])
+            pfNo <- c(pfNo,unique(pf$PtNo)[h])
+          } # end of if/else for extreme angle
+        } # end of for loop for angles
+      }else{
+        # adding the nonrotation angles for the specified number of frames
+        angs <- c(angs,rep(aniNonRotAng,aniRotFrames))
+        pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFrameEx))
+      } # end if/else for whether the last frame or not
+    }# end of loop through Pareto fronts
+  }else{
+    print('Select a valid input for aniRot (\'all\' or \'last\')')
+  } # end if if/else for the type of rotation in the plots
+  
     
   # making the movie
   saveVideo({
     
     # loop to create individual plots
-    for(i in 1:length(unique(pf$PtNo))){
+    for(h in 1:length(angs)){
       
-      if(aniRot == 'all'){
-        # loop over the plot angles
-        for(h in 1:length(ptAngle)){
-          
-          if(h == 1 || h == length(ptAngle)){
-            reps <- aniFramEx
-          }else{
-            reps <- 1
-          }
-          
-          for(k in 1:reps){
-            # angles for plotting
-            if((i %% 2) == 0){
-              angs <- ptAngle
-            }else{
-              angs <- rev(ptAngle)
-            }
-            
-            # indices in matrix to use
-            inds <- which(pf$PtNo %in% unique(pf$PtNo)[i])
-            
-            layout(matrix(c(1,1,2,1,1,3),2,3,byrow=T))
-            
-            # making the 3-d scatter plot
-            scatter3D(pf[inds,objs[1]]   # x axis
-                      ,pf[inds,objs[2]]  # y axis
-                      ,pf[inds,objs[3]]  # z axis
-                      ,xlim = xlims      # x limits
-                      ,ylim = ylims      # y limits
-                      ,zlim = zlims      # z limits
-                      ,col = alpha.col(pf$colors[inds],pf$trans[inds])
-                      ,pch = pc          # shape of marker
-                      ,bg = alpha.col(pf$colors[inds],pf$trans[inds]) # color and transparency when using an outline point
-                      ,cex.symbols = pchMult*pf$size[inds] # scale of points, change multiplier
-                      ,xlab = colnames(pf)[objs[1]] # label for x axis
-                      ,ylab = colnames(pf)[objs[2]] # label for y axis
-                      ,zlab = colnames(pf)[objs[3]] # label for z axis
-                      ,axes=ptAxis                 # should axis be drawn
-                      ,ticktype=ttype              # should tick marks be drawn
-                      ,label.tick.marks=ptLabTick  # should tick marks be labeled
-                      ,grid=ptGrid                 # should grid be drawn
-                      ,cex.lab=ptCexLab            # character expansion for labels
-                      ,theta=angs[h]               # angle of plot
-                      ,phi=angs[h]                 # angle of plot
-                      ,colkey=NULL                 # removing color bar
-                      ,colvar=NA                   # no color variable
-                      
-            )
-            title(ptMain
-                  ,line=ptMainLine
-                  ,cex=ptMainCex)
-            par(xpd=T)  # plotting outside of the graph, in margins
-            # empty plot for where legend will be
-            plot(NA,NA,bty='n'
-                 ,xlim=c(0,1)
-                 ,ylim=c(0,1)
-                 ,axes=F
-                 ,xlab=''
-                 ,ylab='')
-            # adding legend
-            legend(x=legLoc[1]                  # x location
-                   ,y=legLoc[2]                 # y location
-                   ,legend= leg_sizes_labs      # legend entries rounded
-                   ,col=alpha.col(legCol,1)     # transparency              # color of points
-                   ,pch=pc                      # symbol type
-                   ,bg = alpha.col(legCol,1)    # fill for color
-                   ,pt.cex=pchMult*round(quantile(pf$size,probs=c(0.1,0.5,0.9)),2)
-                   ,bty='n'                     # no box
-                   ,title=colnames(pf)[objs[5]] # legend title
-                   ,cex=legCex                  # character expansion
-                   ,y.intersp=legyinsp          # vertial spacing of entries
-                   ,horiz=legHoriz # vertical or horizontal orientation
-            )
-            plot(NA,NA
-                 ,bty='n'
-                 ,xlim=c(0,1)
-                 ,ylim=c(0,1)
-                 ,axes=F
-                 ,xlab=''
-                 ,ylab=''
-            )
-            
-            # color bars
-            for(j in 1:length(tspLevsUse)){
-              if(j == 1){
-                colTitle <- colnames(pf)[objs[4]]
-              }else{
-                colTitle <- ''
-              }
-              add.color.bar(leg=cbLen                       # length of color bar
-                            ,cols=alpha.col(cb_cols,tspVals[j]) # colors, with alpha for transparency
-                            ,title=''                       # title, only for top color bar
-                            ,lims=cbLim                     # limits for color bar
-                            ,digits=cbDig                   # number of digits in rounding entries
-                            ,prompt=F                       # do not prompt user for location
-                            ,x=cbx                          # x location
-                            ,y=cby + (j-1)*cbdy             # y location            # y location
-                            ,subtitle=''                    # subtitle for plot
-                            ,lwd=cblwd                      # width of the color bar
-                            ,outline=cbout                  # outline the color bar
-                            ,cex=cbCex                      # 
-              )
-              # adding header text
-              text(x=cbx+cbLen/2      # x location
-                   ,y=cby-2*cbdy     # y location
-                   ,pos=2     # above
-                   ,labels=colTitle # title
-                   ,cex=cbCex # character expansion
-              )
-              
-              # adding a text for the transparency
-              text(x=cbx
-                   ,y=cby+(j-1)*cbdy
-                   ,labels=paste(colnames(pf)[objs[6]],' = ',round(tspLevsUse[j],2),sep='')
-                   ,cex=tspCex
-                   ,pos=2)
-              
-            } # close of color bar loop
-          } # close of rep loop
-        } # close of angle loop
-      }else if (aniRot=='last'){
-        # loop over the plot angles
-        for(h in 1:length(ptAngle)){
-          
-          if(h == 1 || h == length(ptAngle)){
-            reps <- aniFramEx
-          }else{
-            reps <- 1
-          }
-          
-          # setting repititions for non-last values
-          if(i == length(unique(pf$PtNo))){
-            reps <- aniRotFrames
-          }
-          
-          for(k in 1:reps){
-            # angles for plotting
-            if((i %% 2) == 0){
-              angs <- ptAngle
-            }else{
-              angs <- rev(ptAngle)
-            }
-            
-            # angles for the non-rotated values
-            if(i == length(unique(pf$PtNo))){
-              angs <- rep(aniNonRotAng,length(ptAngle))
-            }
-            
-            # indices in matrix to use
-            inds <- which(pf$PtNo %in% unique(pf$PtNo)[i])
-            
-            layout(matrix(c(1,1,2,1,1,3),2,3,byrow=T))
-            
-            # making the 3-d scatter plot
-            scatter3D(pf[inds,objs[1]]   # x axis
-                      ,pf[inds,objs[2]]  # y axis
-                      ,pf[inds,objs[3]]  # z axis
-                      ,xlim = xlims      # x limits
-                      ,ylim = ylims      # y limits
-                      ,zlim = zlims      # z limits
-                      ,col = alpha.col(pf$colors[inds],pf$trans[inds])
-                      ,pch = pc          # shape of marker
-                      ,bg = alpha.col(pf$colors[inds],pf$trans[inds]) # color and transparency when using an outline point
-                      ,cex.symbols = pchMult*pf$size[inds] # scale of points, change multiplier
-                      ,xlab = colnames(pf)[objs[1]] # label for x axis
-                      ,ylab = colnames(pf)[objs[2]] # label for y axis
-                      ,zlab = colnames(pf)[objs[3]] # label for z axis
-                      ,axes=ptAxis                 # should axis be drawn
-                      ,ticktype=ttype              # should tick marks be drawn
-                      ,label.tick.marks=ptLabTick  # should tick marks be labeled
-                      ,grid=ptGrid                 # should grid be drawn
-                      ,cex.lab=ptCexLab            # character expansion for labels
-                      ,theta=angs[h]               # angle of plot
-                      ,phi=angs[h]                 # angle of plot
-                      ,colkey=NULL                 # removing color bar
-                      ,colvar=NA                   # no color variable
-                      
-            )
-            # adding title
-            title(ptMain
-                  ,line=ptMainLine
-                  ,cex.main=ptMainCex)
-            
-            par(xpd=T)  # plotting outside of the graph, in margins
-            # empty plot for where legend will be
-            plot(NA,NA,bty='n'
-                 ,xlim=c(0,1)
-                 ,ylim=c(0,1)
-                 ,axes=F
-                 ,xlab=''
-                 ,ylab='')
-            # adding legend
-            legend(x=legLoc[1]                  # x location
-                   ,y=legLoc[2]                 # y location
-                   ,legend= leg_sizes_labs      # legend entries rounded
-                   ,col=alpha.col(legCol,1)     # transparency              # color of points
-                   ,pch=pc                      # symbol type
-                   ,bg = alpha.col(legCol,1)    # fill for color
-                   ,pt.cex=pchMult*round(quantile(pf$size,probs=c(0.1,0.5,0.9)),2)
-                   ,bty='n'                     # no box
-                   ,title=colnames(pf)[objs[5]] # legend title
-                   ,cex=legCex                  # character expansion
-                   ,y.intersp=legyinsp          # vertial spacing of entries
-                   ,horiz=legHoriz # vertical or horizontal orientation
-            )
-            plot(NA,NA
-                 ,bty='n'
-                 ,xlim=c(0,1)
-                 ,ylim=c(0,1)
-                 ,axes=F
-                 ,xlab=''
-                 ,ylab=''
-            )
-            
-            # color bars
-            for(j in 1:length(tspLevsUse)){
-              if(j == 1){
-                colTitle <- colnames(pf)[objs[4]]
-              }else{
-                colTitle <- ''
-              }
-              add.color.bar(leg=cbLen                       # length of color bar
-                            ,cols=alpha.col(cb_cols,tspVals[j]) # colors, with alpha for transparency
-                            ,title=''                       # title, only for top color bar
-                            ,lims=cbLim                     # limits for color bar
-                            ,digits=cbDig                   # number of digits in rounding entries
-                            ,prompt=F                       # do not prompt user for location
-                            ,x=cbx                          # x location
-                            ,y=cby + (j-1)*cbdy             # y location            # y location
-                            ,subtitle=''                    # subtitle for plot
-                            ,lwd=cblwd                      # width of the color bar
-                            ,outline=cbout                  # outline the color bar
-                            ,cex=cbCex                      # 
-              )
-              # adding header text
-              text(x=cbx+cbLen/2      # x location
-                   ,y=cby-2*cbdy     # y location
-                   ,pos=2     # above
-                   ,labels=colTitle # title
-                   ,cex=cbCex # character expansion
-              )
-              
-              # adding a text for the transparency
-              text(x=cbx
-                   ,y=cby+(j-1)*cbdy
-                   ,labels=paste(colnames(pf)[objs[6]],' = ',round(tspLevsUse[j],2),sep='')
-                   ,cex=tspCex
-                   ,adj=0.5)
-              
-            } # close of color bar loop
-          } # close of rep loop
-          
-          h <- length(ptAngle)+1
-          
-        } # close of angle loop
-      } # close of else condition
-    } # close of Pareto front loops
-  } # close of save movie loop
-  ,video.name=aniName
-  ,ani.height=aniH
-  ,ani.width=aniW
-  ,interval=aniInt
-  )
+      # indices in matrix to use
+      inds <- which(pf$PtNo %in% pfNo[h])
+      
+      # layout matrix
+      # plot1 is is in the 1 locations, 2 and 3 are used for legends
+      # 1 1 | 2
+      # 1 1 | 3
+      layout(matrix(c(1,1,2,1,1,3),2,3,byrow=T))
+      
+      # making the 3-d scatter plot
+      scatter3D(pf[inds,objs[1]]   # x axis
+                ,pf[inds,objs[2]]  # y axis
+                ,pf[inds,objs[3]]  # z axis
+                ,xlim = xlims      # x limits
+                ,ylim = ylims      # y limits
+                ,zlim = zlims      # z limits
+                ,col = alpha.col(pf$colors[inds],pf$trans[inds])
+                ,pch = pc          # shape of marker
+                ,bg = alpha.col(pf$colors[inds],pf$trans[inds]) # color and transparency when using an outline point
+                ,cex.symbols = pchMult*pf$size[inds] # scale of points, change multiplier
+                ,xlab = colnames(pf)[objs[1]] # label for x axis
+                ,ylab = colnames(pf)[objs[2]] # label for y axis
+                ,zlab = colnames(pf)[objs[3]] # label for z axis
+                ,axes=ptAxis                 # should axis be drawn
+                ,ticktype=ttype              # should tick marks be drawn
+                ,label.tick.marks=ptLabTick  # should tick marks be labeled
+                ,grid=ptGrid                 # should grid be drawn
+                ,cex.lab=ptCexLab            # character expansion for labels
+                ,theta=angs[h]               # angle of plot
+                ,phi=angs[h]                 # angle of plot
+                ,colkey=NULL                 # removing color bar
+                ,colvar=NA                   # no color variable
+      )
+      
+      # adding title for 3d plot
+      title(ptMain
+            ,line=ptMainLine
+            ,cex=ptMainCex)
+      
+      # plotting outside of the graph, in margins
+      # might be vestigial
+      par(xpd=T)  
+     
+      # empty plot for where legend will be (plot area 2)
+      plot(NA,NA,bty='n'
+           ,xlim=c(0,1)
+           ,ylim=c(0,1)
+           ,axes=F
+           ,xlab=''
+           ,ylab='')
+      
+      # adding legend
+      legend(x=legLoc[1]                  # x location
+             ,y=legLoc[2]                 # y location
+             ,legend= leg_sizes_labs      # legend entries rounded
+             ,col=alpha.col(legCol,1)     # transparency              # color of points
+             ,pch=pc                      # symbol type
+             ,bg = alpha.col(legCol,1)    # fill for color
+             ,pt.cex=pchMult*round(quantile(pf$size,probs=c(0.1,0.5,0.9)),2)
+             ,bty='n'                     # no box
+             ,title=colnames(pf)[objs[5]] # legend title
+             ,cex=legCex                  # character expansion
+             ,y.intersp=legyinsp          # vertial spacing of entries
+             ,horiz=legHoriz # vertical or horizontal orientation
+      )
+      
+      # empty plot for where color bar legend will be
+      plot(NA,NA
+           ,bty='n'
+           ,xlim=c(0,1)
+           ,ylim=c(0,1)
+           ,axes=F
+           ,xlab=''
+           ,ylab=''
+      )
+      
+      # color bars
+      for(j in 1:length(tspLevsUse)){
+        if(j == 1){
+          colTitle <- colnames(pf)[objs[4]]
+        }else{
+          colTitle <- ''
+        }
+        add.color.bar(leg=cbLen                       # length of color bar
+                      ,cols=alpha.col(cb_cols,tspVals[j]) # colors, with alpha for transparency
+                      ,title=''                       # title, only for top color bar
+                      ,lims=cbLim                     # limits for color bar
+                      ,digits=cbDig                   # number of digits in rounding entries
+                      ,prompt=F                       # do not prompt user for location
+                      ,x=cbx                          # x location
+                      ,y=cby + (j-1)*cbdy             # y location            # y location
+                      ,subtitle=''                    # subtitle for plot
+                      ,lwd=cblwd                      # width of the color bar
+                      ,outline=cbout                  # outline the color bar
+                      ,cex=cbCex                      # 
+        )
+        # adding header text
+        text(x=cbx+cbLen/2      # x location
+             ,y=cby-2*cbdy     # y location
+             ,pos=2     # above
+             ,labels=colTitle # title
+             ,cex=cbCex # character expansion
+        )
+        
+        # adding a text for the transparency
+        text(x=cbx
+             ,y=cby+(j-1)*cbdy
+             ,labels=paste(colnames(pf)[objs[6]],' = ',round(tspLevsUse[j],2),sep='')
+             ,cex=tspCex
+             ,pos=2)
+      } # close of color bar loop
+    } # close for angles
+  } # close expression for plotting in video
+  
+  ,video.name=aniName # video name
+  ,ani.height=aniH    # video height (pixels)
+  ,ani.width=aniW     # video width (pixels)
+  ,interval=aniInt    # interval between frames
+  ) # end of saveVideo()
+  
 } # close of function
