@@ -353,9 +353,11 @@ makeParetoMovie <- function(fname                # data name for file
                       ,colvar=NA                   # no color variable
                       
             )
+            # adding title
             title(ptMain
                   ,line=ptMainLine
-                  ,cex=ptMainCex)
+                  ,cex.main=ptMainCex)
+            
             par(xpd=T)  # plotting outside of the graph, in margins
             # empty plot for where legend will be
             plot(NA,NA,bty='n'
@@ -420,7 +422,7 @@ makeParetoMovie <- function(fname                # data name for file
                    ,y=cby+(j-1)*cbdy
                    ,labels=paste(colnames(pf)[objs[6]],' = ',round(tspLevsUse[j],2),sep='')
                    ,cex=tspCex
-                   ,pos=2)
+                   ,adj=0.5)
               
             } # close of color bar loop
           } # close of rep loop
