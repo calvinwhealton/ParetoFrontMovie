@@ -5,10 +5,10 @@
 # dimensions used are 3-space (x,y,z), size, color, and transparency
 
 # libraries
-library(plot3D)          # for 3-d scatter plot
-library(grDevices)       # some color palettes
+library(plot3D)          # 3-d scatter plot
+library(grDevices)       # color palettes and transparency
 library(animation)       # animation of plots
-library(phytools)        # for color bar
+library(phytools)        # color bar
 
 ######################################
 # User-Defined Functions Loaded-in
@@ -33,5 +33,20 @@ setwd('/Users/calvinwhealton/Desktop')
 fileName <- "susq_256_16I_1000MC.runtime.txt"
 
 # calling function to make movie
+# no ideal point
+# mainly default values
 makeParetoMovie(fname=fileName
-                ,mnmx=c(rep('min',5),'max'))
+                ,mnmx=c(rep('min',5),'max') # first 5 columns were minimization
+                )
+
+
+# calling function to make movie
+# no ideal point
+# many adjusted values
+makeParetoMovie(fname=fileName
+                ,mnmx=c(rep('min',5),'max')  # first 5 columns were minimization
+                ,idealAdd=T                  # adding ideal point
+                ,aniName ='ParetoFront2.mp4' # name for animimation
+                ,aniRot='all'                # rotating all points
+                ,colPal=topo.colors(10)      # new color palette
+                )
