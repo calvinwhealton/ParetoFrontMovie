@@ -63,3 +63,33 @@ This file provides the documentation to the functions.
 **ptCexLab**: Character expansion for the axis labels. Default `ptCexLab = 1`. Increase value to make labels larger.
 
 **legSizeVals**: Size values in size legend. Default `legSizeVals = NULL` uses three standard size values for the legend.
+
+**legLoc**: Location of the size legend within the plot for the legend. Default `legLoc=c(0.5,0.7)`.
+
+**legCol**: Color of the size legend points. Default `legCol = 'black'`.
+
+**legCex**: Character expansion for size legend. Default `legCex = 2`. Larger values make the text larger.
+
+**legyinsp**: Verical separation of entries in size legend. Default `legyinsp = 2`. Increasing the value will increase the spacing.
+
+**legHoriz**: Controls if the size legend is horizontal. Default `legHoriz = F`.
+
+**cbLen**: Length of the color bar within the subplot for color bars. Default `cbLen = 0.6`. Increasing the value will increase the length of the color bar.
+
+**cbx**: Horizontal (x) location of the color bars within the subplot. Default `cbx = 0.2`.
+
+**cby**: Vertical (y) location of the first color bar within the subplot. Default `cby = 0.7`.
+
+**cbdy**: Vertical spacing between color bars within the subplot. Defafult `cbdy = -0.1`.
+
+**cblwd**: Line weight (thickness) of the color bar. Default `cblwd = 10`. Increasing the value increases the thickness.
+
+**cbout**: Controls whether an outline box is drawn around the color bar. Default `cbout = F` (no color bar).
+
+**cbDig**: Number of digits for the color bar display. Default `cbDig = 2`.
+
+**cbCex**: Character expansion for the color bar. Default `cbCex = 1.5`. Increasing the values increaes the size of the text.
+
+**tspCex**: Character expansion for the transparency values. Default `tspCex = 1.5`. Increasing the values increaes the size of the text.
+
+**tspLevs**: Transparency values for the legend in terms of the orignial transparency objective. Default `tspLevs = NULL` uses default values based on quantiles.
