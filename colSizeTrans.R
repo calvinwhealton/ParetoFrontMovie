@@ -17,7 +17,6 @@ assignColSizeTrans <- function(df               # data frame processed through c
                                ,transMin=0.2    # minimum transparency used, very faint
                                ,transMax=1      # maximum transparency used, very saturaged
 ){
-  
   # assigning the colors
   dfcalc <- assignCols(df=df
                        ,colObj=colObj
