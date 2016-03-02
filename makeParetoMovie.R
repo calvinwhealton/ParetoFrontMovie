@@ -5,10 +5,13 @@
 makeParetoMovie <- function(fname                # data name for file
                             ,objs=c(1,2,3,4,5,6) # column of objective for x,y,z,size,color,transparency
                             ,ideal=NULL          # ideal point
+                            ,idealAdd=F          # should ideal point be added to plot
+                            ,idealPch=8          # pch for the ideal point
+                            ,idealMult=10        # multiplier for the ideal point
                             ,datSep='#'          # seperator of parteo fronts in file
                             ,mnmx=rep('max',6)   # are objectives minimization or maximazation
                             ,objNames=NULL       # names for objectives
-                            ,nCols=15            # number of colors
+                            ,colN=15             # number of colors
                             ,colPal=NULL         # color palette
                             ,sizePow=1/3         # power used in scaling size
                             ,sizeMin=0.1         # minimum size
@@ -29,6 +32,7 @@ makeParetoMovie <- function(fname                # data name for file
                             ,ptMainCex=4         # character expansion for title of plot
                             ,ptMainLine=-7       # line location of plot
                             ,ptAngle=seq(9,81,1) # angles of axis in degrees, rotates through theta and phi in scatter3D()
+                            ,ptAxis = T          # should axes be plotted
                             ,ptTick=T            # should tick marks be drawn
                             ,ptLabTick=F         # should tick marks be labeled
                             ,ptCexLab=1          # character expansion for plot labels
@@ -45,35 +49,35 @@ makeParetoMovie <- function(fname                # data name for file
                             ,cblwd=10            # line weight of the color bar
                             ,cbout=F             # outline the color bar
                             ,cbDig=2             # digits for color bar
-                            ,cbCex=1.5
-                            ,tspCex=1            # text expansion for the transparency
+                            ,cbCex=1.5           # character expansion for color bar
+                            ,tspCex=1.5          # text expansion for the transparency
                             ,tspLevs=NULL        # transparency levels, in the objective value
 ){
-  
+
   # printing error warning if columns for objectives not defined
   if(length(unique(objs)) != 6){
     print('Not 6 unique objectives')
   }
-  
+
   # reading-in file and cleaning it
   pf <- cleanData(fname
                   ,separator=datSep
                   ,objNames=objNames)
-  
+
   # converting all values to maximization
   for(i in 1:length(mnmx)){
     if(mnmx[i] == 'min'){
       pf[,i] <- pf[,i]*-1
     }
   }
-  
+
   # assigning color, size, and transparency values
   pf <- assignColSizeTrans(df=pf
                            ,colObj=objs[4]
                            ,sizeObj=objs[5]
                            ,transObj=objs[6]
                            ,ideal=ideal[c(4,5,6)]
-                           ,nCols=nCols
+                           ,nCols=colN
                            ,colPal=colPal
                            ,sizePow=sizePow
                            ,sizeMin=sizeMin
@@ -91,12 +95,12 @@ makeParetoMovie <- function(fname                # data name for file
     ylims <- c(min(pf[,objs[2]]),ideal[objs[2]])
     zlims <- c(min(pf[,objs[3]]),ideal[objs[3]])
   }
-  
+
   # other limits
   translims <- c(min(pf$trans),max(pf$trans))
   collims <- c(min(pf$colors),max(pf$colors))
   sizelims <- c(min(pf$size),max(pf$size))
-  
+
   # changing point representation if there is an outline
   if(pchOutline==T){
     if(pchType=='circle'){
@@ -130,17 +134,17 @@ makeParetoMovie <- function(fname                # data name for file
   }else{
     leg_sizes <- legSizeVals
   }
-  
+
   # legend labels
   leg_sizes_labs <- paste(round(quantile(pf[,objs[5]],probs=c(0.1,0.5,0.9)),2),sep='')
-  
+
   # colorbar values
   if(is.null(colPal)){
-    cb_cols <- rev(colorRampPalette(c("midnightblue","green3","orange","firebrick1"))(nCols))
+    cb_cols <- rev(colorRampPalette(c("midnightblue","green3","orange","firebrick1"))(colN))
   }else{
     cb_cols <- colPal
   }
-  
+
   # color bar limits
   if(is.null(ideal)){
     cbLim <- c(min(pf[,objs[4]]),max(pf[,objs[4]]))
@@ -178,16 +182,23 @@ makeParetoMovie <- function(fname                # data name for file
     pfNo <- NULL
     
     # loop through the number of Pareto fronts
-    for(h in 1:length(uniqe(pf$PtNo))){
+    for(h in 1:length(unique(pf$PtNo))){
       # looping through the plot angles
       for(i in 1:length(ptAngle)){
         
+        # setting values to reverse if necessary
+        if((h %% 2) == 1){
+          an <- ptAngle
+        }else{
+          an <- rev(ptAngle)
+        }
+        
         # adding extra frames to "pause" the movie at extreme rotation
         if(i == 1 | i == length(ptAngle)){
-          angs <- c(angs,rep(ptAngle[i],aniFrameEx))
-          pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFrameEx))
+          angs <- c(angs,rep(an[i],aniFramEx))
+          pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFramEx))
         }else{
-          angs <- c(angs,ptAngle[i])
+          angs <- c(angs,an[i])
           pfNo <- c(pfNo,unique(pf$PtNo)[h])
         } # end of if/else for extreme angle
       } # end of for loop for angles
@@ -207,8 +218,8 @@ makeParetoMovie <- function(fname                # data name for file
         for(i in 1:length(ptAngle)){
           # adding extra frames to "pause" the movie at extreme rotation
           if(i == 1 | i == length(ptAngle)){
-            angs <- c(angs,rep(ptAngle[i],aniFrameEx))
-            pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFrameEx))
+            angs <- c(angs,rep(ptAngle[i],aniFramEx))
+            pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFramEx))
           }else{
             angs <- c(angs,ptAngle[i])
             pfNo <- c(pfNo,unique(pf$PtNo)[h])
@@ -217,14 +228,25 @@ makeParetoMovie <- function(fname                # data name for file
       }else{
         # adding the nonrotation angles for the specified number of frames
         angs <- c(angs,rep(aniNonRotAng,aniRotFrames))
-        pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniFrameEx))
+        pfNo <- c(pfNo,rep(unique(pf$PtNo)[h],aniRotFrames))
       } # end if/else for whether the last frame or not
     }# end of loop through Pareto fronts
   }else{
     print('Select a valid input for aniRot (\'all\' or \'last\')')
   } # end if if/else for the type of rotation in the plots
   
-    
+  # ideal point for plotting if not defined
+  if(is.null(ideal)){
+    idPlot <- apply(hi[,c(1,2,3,4,5,6)],2,max)
+  }else{
+    idPlot <- ideal
+    for(i in 1:6){
+      if(mnmx[i] == 'min'){
+        idPlot[i] <-ideal[i]*-1
+      }
+    }
+  }
+  
   # making the movie
   saveVideo({
     
@@ -247,9 +269,9 @@ makeParetoMovie <- function(fname                # data name for file
                 ,xlim = xlims      # x limits
                 ,ylim = ylims      # y limits
                 ,zlim = zlims      # z limits
-                ,col = alpha.col(pf$colors[inds],pf$trans[inds])
+                ,col = alpha.col(col=pf$colors[inds],alpha=pf$trans[inds])
                 ,pch = pc          # shape of marker
-                ,bg = alpha.col(pf$colors[inds],pf$trans[inds]) # color and transparency when using an outline point
+                ,bg = alpha.col(col=pf$colors[inds],alpha=pf$trans[inds]) # color and transparency when using an outline point
                 ,cex.symbols = pchMult*pf$size[inds] # scale of points, change multiplier
                 ,xlab = colnames(pf)[objs[1]] # label for x axis
                 ,ylab = colnames(pf)[objs[2]] # label for y axis
@@ -257,7 +279,6 @@ makeParetoMovie <- function(fname                # data name for file
                 ,axes=ptAxis                 # should axis be drawn
                 ,ticktype=ttype              # should tick marks be drawn
                 ,label.tick.marks=ptLabTick  # should tick marks be labeled
-                ,grid=ptGrid                 # should grid be drawn
                 ,cex.lab=ptCexLab            # character expansion for labels
                 ,theta=angs[h]               # angle of plot
                 ,phi=angs[h]                 # angle of plot
@@ -265,10 +286,20 @@ makeParetoMovie <- function(fname                # data name for file
                 ,colvar=NA                   # no color variable
       )
       
+      # adding the ideal point
+      if(idealAdd){
+        scatter3D(x=idPlot[objs[1]]   # x ideal location
+                  ,y=idPlot[objs[2]]  # y ideal location
+                  ,z=idPlot[objs[3]]  # z ideal location
+                  ,col=alpha.col(col=cb_cols[length(cb_cols)],alpha=1)
+                  ,pch=idealPch
+                  ,add=T)
+      }
+
       # adding title for 3d plot
       title(ptMain
             ,line=ptMainLine
-            ,cex=ptMainCex)
+            ,cex.main=ptMainCex)
       
       # plotting outside of the graph, in margins
       # might be vestigial
@@ -288,7 +319,7 @@ makeParetoMovie <- function(fname                # data name for file
              ,legend= leg_sizes_labs      # legend entries rounded
              ,col=alpha.col(legCol,1)     # transparency              # color of points
              ,pch=pc                      # symbol type
-             ,bg = alpha.col(legCol,1)    # fill for color
+             ,bg = alpha.col(col=legCol,alpha=1)    # fill for color
              ,pt.cex=pchMult*round(quantile(pf$size,probs=c(0.1,0.5,0.9)),2)
              ,bty='n'                     # no box
              ,title=colnames(pf)[objs[5]] # legend title
@@ -315,7 +346,7 @@ makeParetoMovie <- function(fname                # data name for file
           colTitle <- ''
         }
         add.color.bar(leg=cbLen                       # length of color bar
-                      ,cols=alpha.col(cb_cols,tspVals[j]) # colors, with alpha for transparency
+                      ,cols=alpha.col(col=cb_cols,alpha=tspVals[j]) # colors, with alpha for transparency
                       ,title=''                       # title, only for top color bar
                       ,lims=cbLim                     # limits for color bar
                       ,digits=cbDig                   # number of digits in rounding entries
@@ -350,5 +381,8 @@ makeParetoMovie <- function(fname                # data name for file
   ,ani.width=aniW     # video width (pixels)
   ,interval=aniInt    # interval between frames
   ) # end of saveVideo()
+
+  # returning data frame with calculations
+  return(pf)
   
 } # close of function
