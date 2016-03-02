@@ -10,13 +10,19 @@ This file provides the documentation to the functions.
 
 **ideal**: Ideal point. Default `ideal=NULL` means that there is no ideal point and the maximum value of the objectives is used.
 
+**idealAdd**: Add ideal point to plot. Defalult `idealAdd = F` for no ideal point. Will use maximum of objectives if ideal not specified. Size is not used.
+
+**idealPch**: Plot symbol for the ideal. Default `idealPch = 8` for a star.
+
+**idealMult**: Multiplier for the ideal point pch. Default `idealMult = 10`.
+
 **datSep**: Separator for the "generations" in the input data file. This is the single character on a line that is used to break the input file for the Pareto Front at different time periods. Default `datSep='#'`.
 
 **mnmx**: Vector of whether objectives are minimization or maximization corresponding to the same order as the columns in the input file. Default `mnmx=rep('max',6)` because the code assumes all objectives are maximization. If any objective was minimized then substitute `min`. Minimization objectives will be multiplied by -1 (assumed they were below 0).
 
 **objNames**: Names of the objectives. Default `objNames=NULL` assigns names 'Obj1', 'Obj2',...,'Obj6'. Can be a vector of six character strings and the names will be assigned in the order of the input columns.
 
-**nCols**: Number of colors used in the color bar: Default `nCols=15`. Only used when `colPal=NULL`.
+**colsN**: Number of colors used in the color bar: Default `nCols=15`. Only used when `colPal=NULL`.
 
 **colPal**: Color palette. Default `colPal = NULL` uses a red-orange-green-blue scale with the number of colors specified by `nCols`. A color palette can also be specified using built-in palettes or user-defined palettes.
 
