@@ -39,7 +39,7 @@ _Ideal Point Definition & Inclusion in Plot_
 
 _Color Objective Variables_
 
-**colsN**: Number of colors used in the color bar: Default `nCols=15`. Only used when `colPal=NULL`.
+**colN**: Number of colors used in the color bar: Default `colN=15`. Only used when `colPal=NULL`.
 
 **colPal**: Color palette. Default `colPal = NULL` uses a red-orange-green-blue scale with the number of colors specified by `nCols`. A color palette can also be specified using built-in palettes or user-defined palettes.
 
