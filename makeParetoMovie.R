@@ -3,14 +3,14 @@
 # all objectives are assumed to be maximization
 # objectives are plotted in 3-d space, size, color, and transparency
 makeParetoMovie <- function(fname                # data name for file
+                            ,datSep='#'          # seperator of parteo fronts in file
+                            ,mnmx=rep('max',6)   # are objectives minimization or maximazation
+                            ,objNames=NULL       # names for objectives
                             ,objs=c(1,2,3,4,5,6) # column of objective for x,y,z,size,color,transparency
                             ,ideal=NULL          # ideal point
                             ,idealAdd=F          # should ideal point be added to plot
                             ,idealPch=8          # pch for the ideal point
                             ,idealMult=10        # multiplier for the ideal point
-                            ,datSep='#'          # seperator of parteo fronts in file
-                            ,mnmx=rep('max',6)   # are objectives minimization or maximazation
-                            ,objNames=NULL       # names for objectives
                             ,colN=15             # number of colors
                             ,colPal=NULL         # color palette
                             ,sizePow=1/3         # power used in scaling size
