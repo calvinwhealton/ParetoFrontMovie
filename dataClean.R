@@ -14,24 +14,20 @@ cleanData <- function(fname            # name of file with data
   # initializing data frame to store values
   # objectives and plot number
   # if objectives names are not defined, then using default values
-  if(is.null(objNames)){
-    df <- as.data.frame(list("Obj1"=NA
-                             ,"Obj2"=NA
-                             ,"Obj3"=NA
-                             ,"Obj4"=NA
-                             ,"Obj5"=NA
-                             ,"Obj6"=NA
-                             ,"PtNo"=NA))
+  df <- as.data.frame(list("Obj1"=NA
+                           ,"Obj2"=NA
+                           ,"Obj3"=NA
+                           ,"Obj4"=NA
+                           ,"Obj5"=NA
+                           ,"Obj6"=NA
+                           ,"PtNo"=NA))
+
+  # changing column names if specified
+  if(is.null(objNames) == F){
+    for(i in 1:6){
+      names(df)[i] <- objNames[i]
+    }
   }
-#   else{
-#     df <- as.data.frame(list(objNames[1]=NA
-#                              ,objNames[2]=NA
-#                              ,objNames[3]=NA
-#                              ,objNames[4]=NA
-#                              ,objNames[5]=NA
-#                              ,objNames[6]=NA
-#                              ,"PtNo"=NA))
-#   }
 
   # opening "read" connection to file
   conn <- file(fname,open="r")
