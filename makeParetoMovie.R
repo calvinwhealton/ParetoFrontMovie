@@ -9,7 +9,7 @@ makeParetoMovie <- function(fname                # data name for file
                             ,objs=c(1,2,3,4,5,6) # column of objective for x,y,z,size,color,transparency
                             ,ideal=NULL          # ideal point
                             ,idealAdd=F          # should ideal point be added to plot
-                            ,idealPch=8          # pch for the ideal point
+                            ,idealPch=11        # pch for the ideal point
                             ,idealMult=10        # multiplier for the ideal point
                             ,colN=15             # number of colors
                             ,colPal=NULL         # color palette
@@ -84,23 +84,43 @@ makeParetoMovie <- function(fname                # data name for file
                            ,transMin=transMin
                            ,transMax=transMax)
   
-  # assigning limits for axis, if no ideal point defined
-  # will assign ideal as maximum if it is defined
-  if(is.null(ideal)){
+  # assigning limits for axes
+  # if plotting ideal and ideal is not defined, used max/min values
+  # if plotting ideal and ideal is defined, use ideal with ideal/min values
+  # if not plotting ideal, use max/min values
+  if(is.null(ideal) & (idealAdd == T)){
     xlims <- c(min(pf[,objs[1]]),max(pf[,objs[1]]))
     ylims <- c(min(pf[,objs[2]]),max(pf[,objs[2]]))
     zlims <- c(min(pf[,objs[3]]),max(pf[,objs[3]]))
-  }else{
+    
+    # ideal point when not defined is the maximum values
+    idPlot <- c(xlims[2],ylims[2],zlims[2],max(pf[,objs[4]]),max(pf[,objs[5]]),max(pf[,objs[6]]))
+  }else if ((is.null(ideal) == F) & (idealAdd == T)){
     xlims <- c(min(pf[,objs[1]]),ideal[objs[1]])
     ylims <- c(min(pf[,objs[2]]),ideal[objs[2]])
     zlims <- c(min(pf[,objs[3]]),ideal[objs[3]])
+    
+    # ideal ploint as defined by the user
+    idPlot <- ideal
+    
+    # multiplying by -1 to make the minimum a maximum
+    for(i in 1:6){
+      if(mnmx[i] == 'min'){
+        idPlot[i] <- -1*idPlot[i]
+      }
+    }
+  # if not adding a point then the limits are based on min and max
+  }else if(idealAdd == F){
+    xlims <- c(min(pf[,objs[1]]),max(pf[,objs[1]]))
+    ylims <- c(min(pf[,objs[2]]),max(pf[,objs[2]]))
+    zlims <- c(min(pf[,objs[3]]),max(pf[,objs[3]]))
   }
-
+  
   # other limits
   translims <- c(min(pf$trans),max(pf$trans))
   collims <- c(min(pf$colors),max(pf$colors))
   sizelims <- c(min(pf$size),max(pf$size))
-
+  
   # changing point representation if there is an outline
   if(pchOutline==T){
     if(pchType=='circle'){
@@ -150,11 +170,6 @@ makeParetoMovie <- function(fname                # data name for file
     cbLim <- c(min(pf[,objs[4]]),max(pf[,objs[4]]))
   }else{
     cbLim <- c(min(pf[,objs[4]]),ideal[4])
-  }
-  
-  # transparency values and levels plotted
-  if(is.null(ideal[6])){
-    ideal <- max(pf[,objs[6]])
   }
   
   # scaling all transparency values
@@ -235,18 +250,6 @@ makeParetoMovie <- function(fname                # data name for file
     print('Select a valid input for aniRot (\'all\' or \'last\')')
   } # end if if/else for the type of rotation in the plots
   
-  # ideal point for plotting if not defined
-  if(is.null(ideal)){
-    idPlot <- apply(hi[,c(1,2,3,4,5,6)],2,max)
-  }else{
-    idPlot <- ideal
-    for(i in 1:6){
-      if(mnmx[i] == 'min'){
-        idPlot[i] <-ideal[i]*-1
-      }
-    }
-  }
-  
   # making the movie
   saveVideo({
     
@@ -293,7 +296,9 @@ makeParetoMovie <- function(fname                # data name for file
                   ,z=idPlot[objs[3]]  # z ideal location
                   ,col=alpha.col(col=cb_cols[length(cb_cols)],alpha=1)
                   ,pch=idealPch
-                  ,add=T)
+                  ,add=T
+                  ,cex=idealMult)
+                    
       }
 
       # adding title for 3d plot
