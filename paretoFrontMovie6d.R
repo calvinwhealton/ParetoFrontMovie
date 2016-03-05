@@ -35,18 +35,20 @@ fileName <- "susq_256_16I_1000MC.runtime.txt"
 # calling function to make movie
 # no ideal point
 # mainly default values
-makeParetoMovie(fname=fileName
-                ,mnmx=c(rep('min',5),'max') # first 5 columns were minimization
-                )
+df_calcs1 <- makeParetoMovie(fname=fileName
+                              ,mnmx=c(rep('min',5),'max') # first 5 columns were minimization
+                              )
 
 
 # calling function to make movie
-# no ideal point
+# ideal point
 # many adjusted values
-makeParetoMovie(fname=fileName
-                ,mnmx=c(rep('min',5),'max')  # first 5 columns were minimization
-                ,idealAdd=T                  # adding ideal point
-                ,aniName ='ParetoFront2.mp4' # name for animimation
-                ,aniRot='all'                # rotating all points
-                ,colPal=topo.colors(10)      # new color palette
-                )
+df_calcs2 <- makeParetoMovie(fname=fileName
+                              ,mnmx=c(rep('min',5),'max')  # first 5 columns were minimization
+                              ,idealAdd=T                  # adding ideal point
+                              ,aniName ='ParetoFront2.mp4' # name for animimation
+                              ,aniRot='all'                # rotating all points
+                              ,colPal=topo.colors(10)      # new color palette
+                             ,idealMult = 8               # size multiplier for the ideal point
+                             ,idealPch=18
+                             )
