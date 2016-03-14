@@ -30,7 +30,7 @@ source("makeParetoMovie.R")
 setwd('/Users/calvinwhealton/Desktop')
 
 # file name, CHANGE !!!!!!!!!!!!!!!!!!!!
-fileName <- "susq_256_16I_1000MC.runtime.txt"
+fileName <- "sampleData.txt"
 
 # calling function to make movie
 # no ideal point
