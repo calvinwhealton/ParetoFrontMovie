@@ -15,6 +15,6 @@ The code is still in beta test. Feedback on which parameters are not working or 
 
 Some example movies are in the .mp4 files, but you must download these files to view them because GitHub will not display them.
 
-**This code is offered under the MIT License. See LICENSE for more details. Please cite this repository as (year or latest commit, commit ID, and date retrieved should be substituted into the format):**
+**This code is offered under the MIT License. See LICENSE for more details. Please cite this repository as (year of latest commit, commit ID, and date retrieved should be substituted into the format):**
 
-Whealton, C.A. and J. Zatarain (\<year>). "ParetoFrontMovie-Code to create a movie of the Pareto Front in R for up to six objectives". GitHub repository. https://github.com/calvinwhealton/sensitivity_analysis \<commit ID>, retrieved \<date>.
+Whealton, C.A. and J. Zatarain (\<year>). "ParetoFrontMovie-Code to create a movie of the Pareto Front in R for up to six objectives". GitHub repository. https://github.com/calvinwhealton/ParetoFrontMovie \<commit ID>, retrieved \<date>.
