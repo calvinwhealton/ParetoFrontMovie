@@ -2,10 +2,10 @@
 Code to create a movie of the Pareto front, as it evolves over time, in R for up to six objectives. The objectives are three spatial dimensions, size, color, and transparency. The input file is assumed to be the Pareto front at different stages of the optimization, where the stages are separated by a given character.
 
 The following R libraries are required:
-•plot3D (for making a 3-d plot using `scatter3D`)
-•grDevices (for some colors and transparency)
-•animation (for making the movie)
-•phytools (for color bars)
+  •plot3D (for making a 3-d plot using `scatter3D`)
+  •grDevices (for some colors and transparency)
+  •animation (for making the movie)
+  •phytools (for color bars)
 
 Depending on the machine you might need to install FFmpeg or avconv. If these are not installed when `saveVideo()` is called it can generate an error.
 
